@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Global Body */
+  body {
+    @apply bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 min-h-screen flex items-center justify-center font-sans;
+  }
+
+  /* Form Container */
+  .form-container {
+    @apply bg-white rounded-xl shadow-2xl p-8 max-w-lg mx-auto relative overflow-hidden;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    background: linear-gradient(to right, #fff, #fff),
+      linear-gradient(to right, #4f46e5, #c026d3);
+    background-origin: border-box;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+
+  .form-container:hover {
+    transform: scale(1.03);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Form Header */
+  .form-header {
+    @apply text-4xl font-extrabold text-gray-900 text-center mb-6;
+    font-family: "Poppins", sans-serif;
+    letter-spacing: 1px;
+  }
+
+  /* Form Footer */
+  .form-footer {
+    @apply text-sm text-gray-500 text-center mt-4;
+    font-family: "Roboto", sans-serif;
+  }
+
+  /* Form Input */
+  .form-input {
+    @apply w-full p-4 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 mb-4;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+  }
+
+  .form-input:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5); /* Glow Effect */
+    transform: translateY(-2px);
+  }
+
+  /* Button */
+  .form-button {
+    @apply bg-indigo-600 text-white py-3 px-6 rounded-lg w-full hover:bg-indigo-700 transition-all duration-300;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+
+  .form-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Link */
+  .form-link {
+    @apply text-indigo-500 text-sm hover:underline mt-3 inline-block text-center w-full;
+    font-weight: 500;
+  }
+
+  /* Google reCAPTCHA */
+  .g-recaptcha {
+    @apply mx-auto flex justify-center mt-4;
+  }
+
+  /* Gradient Border Effect */
+  .gradient-border {
+    border: 2px solid;
+    border-image: linear-gradient(to right, #4f46e5, #c026d3);
+    border-image-slice: 1;
+  }
+
+  /* Icon Styling */
+  .icon-user {
+    @apply absolute top-4 right-4 text-indigo-500 text-3xl cursor-pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+
+  .icon-user:hover {
+    color: #4f46e5;
+    transform: scale(1.1);
+  }
+}
