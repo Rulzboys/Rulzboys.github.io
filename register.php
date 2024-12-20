@@ -1,71 +1,44 @@
 <?php
-// Konfigurasi database
-$host = 'localhost'; // Server database
-$db = 'user_login';  // Nama database
-$user = 'root';      // Username database
-$pass = '';          // Password database
+include 'koneksi.php';
 
-// Membuat koneksi ke database
-$conn = new mysqli($host, $user, $pass, $db);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $password = mysqli_real_escape_string($conn, $_POST['password']);
+    $confirm_password = mysqli_real_escape_string($conn, $_POST['confirm_password']);
+    $recaptchaToken = $_POST['g-recaptcha-response'];
 
-// Cek koneksi
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
-
-// Proses pendaftaran jika form dikirim
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username']);
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
-    $captcha = $_POST['g-recaptcha-response'];
-
-    // Validasi CAPTCHA
-    $secretKey = "6LdKsJsqAAAAAIwiwF577UjUgvgw6nH9IPlJX-y-";
-    $response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$captcha");
+    // Validasi reCAPTCHA
+    $secretKey = '6LdKsJsqAAAAAIwiwF577UjUgvgw6nH9IPlJX-y-'; // Ganti dengan kunci rahasia reCAPTCHA Anda
+    $response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$recaptchaToken");
     $responseKeys = json_decode($response, true);
 
-    if (!$responseKeys['success']) {
-        die("Captcha tidak valid! Silakan coba lagi.");
+    if (!$responseKeys['success'] || $responseKeys['score'] < 0.5) {
+        echo "<script>alert('Verifikasi reCAPTCHA gagal! Silakan coba lagi.'); window.location='register.html';</script>";
+        exit;
     }
 
-    // Validasi password dan email
+    // Validasi Password
     if ($password !== $confirm_password) {
-        die("Password dan konfirmasi password tidak cocok!");
+        echo "<script>alert('Password dan Konfirmasi Password tidak cocok!'); window.location='register.html';</script>";
+        exit;
     }
 
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        die("Email tidak valid!");
-    }
+    // Hash Password
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // Hash password
-    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-
-    // Cek apakah username atau email sudah terdaftar
-    $stmt_check = $conn->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
-    $stmt_check->bind_param("ss", $username, $email);
-    $stmt_check->execute();
-    $result = $stmt_check->get_result();
-
-    if ($result->num_rows > 0) {
-        die("Username atau email sudah terdaftar!");
-    }
-
-    // Simpan data ke database
+    // Simpan ke Database
     $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
     $stmt->bind_param("sss", $username, $email, $hashed_password);
 
     if ($stmt->execute()) {
-        echo "Pendaftaran berhasil! Silakan login.";
+        echo "<script>alert('Selamat! Anda telah berhasil membuat akun. Silahkan login.'); window.location='login.html';</script>";
     } else {
-        echo "Terjadi kesalahan: " . $stmt->error;
+        echo "<script>alert('Terjadi kesalahan: " . $stmt->error . "'); window.location='register.html';</script>";
     }
 
     $stmt->close();
-    $stmt_check->close();
 }
 
-// Tutup koneksi database
-$conn->close();
+mysqli_close($conn);
 ?>
